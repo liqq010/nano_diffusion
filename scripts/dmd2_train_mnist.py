@@ -10,7 +10,7 @@ from dit import DiT
 from dmd import DMD2, DiscHead
 
 device = "cuda"
-epochs = 50
+epochs = 20
 batch_size = 256
 lr = 2e-5  # same for G and the fake score incl. the discriminator head (2e-6 in the official ImageNet config)
 num_classes = 10

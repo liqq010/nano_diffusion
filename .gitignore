@@ -29,3 +29,7 @@ htmlcov/
 
 # Editor
 .vscode/
+
+# Data and outputs
+data/
+results/

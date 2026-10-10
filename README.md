@@ -1,6 +1,8 @@
 # nano_diffusion
 From 1000-step DDPM to 1-step generators: clean, minimal PyTorch implementations of diffusion and flow models  
 
+Blog post: [From 1000 Steps to 1: Building Diffusion and Flow Models from Scratch](https://liqq010.github.io/posts/nano-diffusion/)  
+
 ### 1. how to run: 
 ```bash
 # get mnist dataset
@@ -12,7 +14,7 @@ PYTHONPATH=src python scripts/rf_train_mnist.py
 PYTHONPATH=src python scripts/rf_test_mnist.py 
 ```
 ### 2. covered
-- [x] DDPM eps/x0/v-prediction, CFG, linear/cosine schedule, trailing, zero terminal SNR, min-SNR-𝛄
+- [x] DDPM eps/x0/v-prediction, CFG, linear/cosine schedule, trailing
 - [x] DDIM / DPM-Solver-2 / DPM++ / UniPC
 - [x] Rectified Flow, logit-normal, timestep shift  
 - [x] Consistency Models (CT / CD)
@@ -79,10 +81,10 @@ comparison between LoRA finetune and full parameter finetune
 
 ### 4. pitfalls
 - **MeanFlow time scale**: feeding `t * 1000` (as in RF) into the sinusoidal embedding amplifies du/dt by ~1000x (∂u/∂(t-r) measured 14–43 vs |v|≈1.4), the JVP target is dominated by it and training diverges (blurry, wrong-class 1-step samples). Feed t and t-r in [0, 1] as the official implementation does.
-- **MeanFlow JVP memory**: default SDPA kernels do not support forward-mode AD, use the MATH backend for the JVP. Computing the JVP with autograd also stores the tangent graph (~50GB at batch 256); since the target is stop-grad, compute the JVP under `no_grad` and get u from a separate normal forward (~10GB).
+- **MeanFlow JVP memory**: default SDPA kernels do not support forward-mode AD, use the MATH backend for the JVP. Computing the JVP with autograd also stores the tangent graph (~53GB at batch 256); since the target is stop-grad, compute the JVP under `no_grad` and get u from a separate normal forward (~12GB).
 - **CT time distribution**: RF's logit-normal(0, 1) puts only ~0.16% of samples at t ≥ 0.95; CT collapsed around epoch 40 (after the N 40→80 switch) in repeated runs. iCT's lognormal (P_mean=-1.1, P_std=2.0, ~2.2% at t ≥ 0.95) did not collapse.
 - **DDPM few-step sampling grid**: `linspace(999, 0, steps)` wastes the last network call at t=0, so 2 steps ≈ 1 step. Use the trailing grid `linspace(999, 0, steps + 1)[:-1]`. At 1–2 steps DPM++(2M) and UniPC are identical to DDIM.
-- **eps-prediction at 1 step**: x0 = (x_t - √(1-ᾱ)·ε̂) / √ᾱ with √ᾱ_999 ≈ 0.0064 amplifies the ε error ~156x, so 1-step DDIM with eps-prediction is pure noise while x0 / v give blurry means.
+- **eps-prediction at 1 step**: x0 = (x_t - √(1-ᾱ)·ε̂) / √ᾱ with √ᾱ_999 ≈ 0.0064 amplifies the ε error ~157x, so 1-step DDIM with eps-prediction is pure noise while x0 / v give blurry means.
 
 ### 5. citations    
 DDPM [Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2006.11239)  
@@ -94,7 +96,7 @@ UniPC [UniPC: A Unified Predictor-Corrector Framework for Fast Sampling of Diffu
 Heun [Elucidating the Design Space of Diffusion-Based Generative Models](https://arxiv.org/abs/2206.00364)  
 v-prediction [Progressive Distillation for Fast Sampling of Diffusion Models](https://arxiv.org/abs/2202.00512)  
 cosine schedule [Improved Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2102.09672)  
-trailing, zero terminal SNR [Common Diffusion Noise Schedules and Sample Steps are Flawed](https://arxiv.org/abs/2305.08891)  
+trailing [Common Diffusion Noise Schedules and Sample Steps are Flawed](https://arxiv.org/abs/2305.08891)  
 CFG [Classifier-Free Diffusion Guidance](https://arxiv.org/abs/2207.12598)  
 logit-normal, timestep shift [Scaling Rectified Flow Transformers for High-Resolution Image Synthesis](https://arxiv.org/abs/2403.03206)  
 Consistency Models [Consistency Models](https://arxiv.org/abs/2303.01469), [Improved Techniques for Training Consistency Models](https://arxiv.org/abs/2310.14189)  
@@ -103,4 +105,6 @@ DMD [One-step Diffusion with Distribution Matching Distillation](https://arxiv.o
 DMD2 [Improved Distribution Matching Distillation for Fast Image Synthesis](https://arxiv.org/abs/2405.14867)  
 DiT [Scalable Diffusion Models with Transformers](https://arxiv.org/abs/2212.09748)  
 LoRA finetune [LoRA: Low-Rank Adaptation of Large Language Models](https://arxiv.org/abs/2106.09685)  
-min-SNR-𝛄 [Efficient Diffusion Training via Min-SNR Weighting Strategy](https://arxiv.org/abs/2303.09556)  
+
+### License
+MIT, see [LICENSE](LICENSE).
