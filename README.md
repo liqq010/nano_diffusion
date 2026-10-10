@@ -22,15 +22,38 @@ PYTHONPATH=src python scripts/rf_test_mnist.py
 - [x] DMD2  
 - [x] LoRA finetune  
 
-|  |  |
-|---|---|
-| `src/dit.py` | DiT backbone |
-| `src/ddpm.py` | DDPM (eps / x0 / v), DDPM / DDIM / DPM-Solver-2 / DPM++(2M) / UniPC samplers |
-| `src/rf.py` | Rectified Flow, Euler / Heun samplers |
-| `src/cm.py` | Consistency Models, CT (iCT) / CD |
-| `src/meanflow.py` | MeanFlow |
-| `src/dmd.py` | DMD2, distribution matching + GAN losses |
-| `src/lora.py` | LoRA layers |
+### file structure
+```
+.
+├── LICENSE
+├── src
+│   ├── dit.py                      # DiT backbone
+│   ├── ddpm.py                     # DDPM (eps / x0 / v), DDPM / DDIM / DPM-Solver-2 / DPM++(2M) / UniPC samplers
+│   ├── rf.py                       # Rectified Flow, Euler / Heun samplers
+│   ├── cm.py                       # Consistency Models, CT (iCT) / CD
+│   ├── meanflow.py                 # MeanFlow
+│   ├── dmd.py                      # DMD2, distribution matching + GAN losses
+│   ├── lora.py                     # LoRA layers
+│   └── mnist_dataset.py            # MNIST dataset from HF parquet, scaled to [-1, 1]
+├── scripts
+│   ├── create_mnist_outlined.py    # Synthetic outlined MNIST for LoRA finetune
+│   ├── ddpm_train_mnist.py         # Train DDPM (eps / x0 / v)
+│   ├── ddpm_test_mnist.py          # Sample with DDPM / DDIM / DPM-Solver-2 / DPM++ / UniPC
+│   ├── rf_train_mnist.py           # Train Rectified Flow (teacher / base model for CD, DMD2, LoRA)
+│   ├── rf_test_mnist.py            # Sample with Euler / Heun, w/ and w/o CFG
+│   ├── ct_train_mnist.py           # Consistency Training (iCT)
+│   ├── ct_test_mnist.py
+│   ├── cd_train_mnist.py           # Consistency Distillation from the RF teacher
+│   ├── cd_test_mnist.py
+│   ├── meanflow_train_mnist.py     # Train MeanFlow
+│   ├── meanflow_test_mnist.py
+│   ├── dmd2_train_mnist.py         # DMD2 one-step distillation from the RF teacher
+│   ├── dmd2_test_mnist.py
+│   ├── rf_lora_train_mnist.py      # LoRA / full finetune of RF on outlined MNIST
+│   └── rf_lora_test_mnist.py
+├── figs                            # Figures used in this README
+└── README.md
+```
 
 
 ### 3. ablation studies  
