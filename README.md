@@ -1,6 +1,6 @@
 # nano_diffusion
 
-<p align="center"><img src="figs/logo.png" width="600"></p>
+<p align="center"><img src="figs/logo_v2.png" width="600"></p>
 
 From 1000-step DDPM to 1-step generators: clean, minimal PyTorch implementations of diffusion and flow models  
 
