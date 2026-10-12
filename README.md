@@ -1,19 +1,25 @@
 # nano_diffusion
+
+<p align="center"><img src="figs/logo.png" width="600"></p>
+
 From 1000-step DDPM to 1-step generators: clean, minimal PyTorch implementations of diffusion and flow models  
 
 Blog post: [From 1000 Steps to 1: Building Diffusion and Flow Models from Scratch](https://liqq010.github.io/posts/nano-diffusion/)  
 
-### 1. how to run: 
-```bash
-# get mnist dataset
-git clone https://huggingface.co/datasets/ylecun/mnist data/mnist   
-# create synthetic outlined mnist for LoRA
-python scripts/create_mnist_outlined.py  
-# train / generate 
-PYTHONPATH=src python scripts/rf_train_mnist.py  
-PYTHONPATH=src python scripts/rf_test_mnist.py 
-```
-### 2. covered
+![1-step comparison](figs/1step_gen_cmp.png)
+*One-step generation on MNIST using different training objectives.*
+
+
+### 0. Why this repo?
+
+There is a lot between *"train a model to remove noise"* and *"generate an image in one step."* The goal here is to make that progression easy to follow **in code**, without hiding the interesting parts inside a large framework.
+
+- **Read the actual algorithms.** Minimal implementations of diffusion, flow matching, distillation, and sampling in standalone Python files.
+- **Compare approaches side by side.** A shared MNIST setup and small DiT backbone make it easier to inspect differences in objectives and samplers.
+- **Learn from experiments that went wrong.** Timestep grids, prediction parameterizations, time embeddings, and JVP memory usage can change the outcome dramatically.
+
+
+### 1. covered
 - [x] DDPM eps/x0/v-prediction, CFG, linear/cosine schedule, trailing
 - [x] DDIM / DPM-Solver-2 / DPM++ / UniPC
 - [x] Rectified Flow, logit-normal, timestep shift  
@@ -22,7 +28,7 @@ PYTHONPATH=src python scripts/rf_test_mnist.py
 - [x] DMD2  
 - [x] LoRA finetune  
 
-### file structure
+file structure
 ```
 .
 ├── LICENSE
@@ -55,6 +61,16 @@ PYTHONPATH=src python scripts/rf_test_mnist.py
 └── README.md
 ```
 
+### 2. how to run: 
+```bash
+# get mnist dataset
+git clone https://huggingface.co/datasets/ylecun/mnist data/mnist   
+# create synthetic outlined mnist for LoRA
+python scripts/create_mnist_outlined.py  
+# train / generate 
+PYTHONPATH=src python scripts/rf_train_mnist.py  
+PYTHONPATH=src python scripts/rf_test_mnist.py 
+```
 
 ### 3. ablation studies  
 experiment settings:  
