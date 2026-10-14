@@ -12,23 +12,25 @@ Blog post: [From 1000 Steps to 1: Building Diffusion and Flow Models from Scratc
 
 ### 0. Why this repo?
 
-There is a lot between *"train a model to remove noise"* and *"generate an image in one step."* The goal here is to make that progression easy to follow **in code**, without hiding the interesting parts inside a large framework.
+There is a lot between *"train a model to remove noise"* and *"generate an image in one step."* The goal here is to make that progression easy to follow in small but complete code, without hiding the interesting parts inside a large framework.
 
 - **Read the actual algorithms.** Minimal implementations of diffusion, flow matching, distillation, and sampling in standalone Python files.
 - **Compare approaches side by side.** A shared MNIST setup and small DiT backbone make it easier to inspect differences in objectives and samplers.
 - **Learn from experiments that went wrong.** Timestep grids, prediction parameterizations, time embeddings, and JVP memory usage can change the outcome dramatically.
 
 
-### 1. covered
-- [x] DDPM eps/x0/v-prediction, CFG, linear/cosine schedule, trailing
-- [x] DDIM / DPM-Solver-2 / DPM++ / UniPC
-- [x] Rectified Flow, logit-normal, timestep shift  
-- [x] Consistency Models (CT / CD)
-- [x] MeanFlow
-- [x] DMD2  
-- [x] LoRA finetune  
+### 1. what's covered
+ - DDPM with eps / x0 / v-prediction 
+ - DDIM / DPM-Solver-2 / DPM++ / UniPC
+ - Rectified Flow  
+ - classifier-free guidance
+ - improvements, cosine schedule, trailing, logit-normal, timestep shift
+ - Consistency Models (CT / CD)
+ - MeanFlow
+ - DMD2 distill 
+ - LoRA finetune  
+  
 
-file structure
 ```
 .
 ├── LICENSE
@@ -72,50 +74,72 @@ PYTHONPATH=src python scripts/rf_train_mnist.py
 PYTHONPATH=src python scripts/rf_test_mnist.py 
 ```
 
-### 3. ablation studies  
-experiment settings:  
-DiT (28x28 input, patch 2, hidden 256, depth 8, 16 heads, 9.79M params)  
+### 3. ablation studies 
+experiment settings: DiT (28x28 input, patch 2, hidden 256, depth 8, 16 heads, 9.79M params)  
 
-#### 3.1 linear vs cosine noise schedule
+#### 3.1 visualization of linear vs cosine noise schedule
 ![noise_schedule_cmp](figs/ddpm_linear_cosine_noise_schedule.png)  
+
 #### 3.2 DDPM eps / x0 / v-prediction  
-training loss curve  
+training loss curves  
+
 ![loss_curve](figs/ddpm_loss_curve.png)  
+
 samples generated during training  
+
 ![train_progress](figs/ddpm_train_progress.png)  
-comparison of different solvers:  DDIM / DPM++ / UniPC  
+
+comparison of sampling solvers:  DDIM / DPM++ / UniPC  
+
 ![solver_cmp](figs/ddpm_eps_solvers_cmp.png)    
+
 #### 3.3 Rectified Flow  
 comparison between Euler and Heun   
+
 ![rf_solver_cmp](figs/rf_solvers_cmp.png)
+
 #### 3.4 Rectified Flow w/o CFG  
 comparison between samples generated w/o classifier-free guidance   
+
 ![rf_cfg_cmp](figs/rf_cfg_cmp.png)
-#### 3.5 Consistency Models, CT(iCT) vs CD  
+
+#### 3.5 Consistency Models, CT (iCT) vs CD  
 comparison between consistency training (CT) and consistency distillation (CD)  
+
 ![ct_cd_cmp](figs/cm_ct_cd_cmp.png)
+
 #### 3.6 MeanFlow
 samples generated during training  
+
 ![train_progress](figs/meanflow_cfg3_train_progress.png)
+
 #### 3.7 DMD2 distillation
 one-step generator distilled from the RF teacher (cfg=3) with distribution matching + GAN loss, TTUR 5:1, trained for 20 epochs  
-training metrics:  
+training metrics monitored:  
 - grad_norm: norm of the distribution matching gradient (x0_fake - x0_real) / w  
 - loss_fake: flow matching loss of the fake score on generator samples  
 - lag: denoise error of the fake score right after a generator update / after 5 fake updates (≈1 means the fake score keeps up)  
-- fake/teacher: denoise error of fake score vs teacher on generator samples (<1 means the fake score has fitted the generator distribution)  
+- fake / teacher: denoise error of fake score vs teacher on generator samples (<1 means the fake score has fitted the generator distribution)  
 - p_real / p_fake, loss_d / loss_g_gan: discriminator outputs and GAN losses  
 
 ![dmd2_loss_curve](figs/dmd2_loss_curve.png)
-#### 3.8 1-step DDIM / RF / CT / CD / MeanFlow / DMD2   
+
+#### 3.8 1-step generation by DDIM / RF / CT / CD / MeanFlow / DMD2   
 ![1step_cmp](figs/1step_gen_cmp.png)  
+
 #### 3.9 LoRA finetune
-four settings, r=1(0.33%), r=4(1.34%), r=16(5.36%), full(99.49%)  
-loss curve  
+four experiment settings, r=1(0.33%), r=4(1.34%), r=16(5.36%), full(99.49%)  
+
+training loss curve  
+
 ![lora_loss_curve](figs/rf_lora_loss_cmp.png)
+
 samples generated during LoRA finetune. synthetic outlined MNIST as LoRA finetune dataset     
+
 ![lora_progress](figs/lora_finetune_progress.png)
+
 comparison between LoRA finetune and full parameter finetune  
+
 ![lora_full_cmp](figs/lora_full_cmp.png)  
 
 ### 4. pitfalls
