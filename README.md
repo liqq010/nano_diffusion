@@ -28,6 +28,7 @@ There is a lot between *"train a model to remove noise"* and *"generate an image
  - Consistency Models (CT / CD)
  - MeanFlow
  - DMD2 distill 
+ - TDM (Trajectory Distribution Matching) distill 
  - LoRA finetune  
   
 
@@ -41,6 +42,7 @@ There is a lot between *"train a model to remove noise"* and *"generate an image
 │   ├── cm.py                       # Consistency Models, CT (iCT) / CD
 │   ├── meanflow.py                 # MeanFlow
 │   ├── dmd.py                      # DMD2, distribution matching + GAN losses
+│   ├── tdm.py                      # TDM, few-step trajectory distribution matching
 │   ├── lora.py                     # LoRA layers
 │   └── mnist_dataset.py            # MNIST dataset from HF parquet, scaled to [-1, 1]
 ├── scripts
@@ -57,6 +59,8 @@ There is a lot between *"train a model to remove noise"* and *"generate an image
 │   ├── meanflow_test_mnist.py
 │   ├── dmd2_train_mnist.py         # DMD2 one-step distillation from the RF teacher
 │   ├── dmd2_test_mnist.py
+│   ├── tdm_train_mnist.py          # TDM K-step distillation from the RF teacher
+│   ├── tdm_test_mnist.py
 │   ├── rf_lora_train_mnist.py      # LoRA / full finetune of RF on outlined MNIST
 │   └── rf_lora_test_mnist.py
 ├── figs                            # Figures used in this README
@@ -166,6 +170,7 @@ Consistency Models [Consistency Models](https://arxiv.org/abs/2303.01469), [Impr
 MeanFlow [Mean Flows for One-step Generative Modeling](https://arxiv.org/abs/2505.13447)  
 DMD [One-step Diffusion with Distribution Matching Distillation](https://arxiv.org/abs/2311.18828)  
 DMD2 [Improved Distribution Matching Distillation for Fast Image Synthesis](https://arxiv.org/abs/2405.14867)  
+TDM [Learning Few-Step Diffusion Models by Trajectory Distribution Matching](https://arxiv.org/abs/2503.06674)  
 DiT [Scalable Diffusion Models with Transformers](https://arxiv.org/abs/2212.09748)  
 LoRA finetune [LoRA: Low-Rank Adaptation of Large Language Models](https://arxiv.org/abs/2106.09685)  
 
